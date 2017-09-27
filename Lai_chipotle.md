@@ -10,14 +10,19 @@
 *a. 4623*
 ### 4. `grep -cri 'chicken' chipotle.tsv`
 *a. 553*
+
 `grep -cri 'steak' chipotle.tsv`
+
 *a. 368*
+
 *Chicken burritos are more popular.* 
 ### 5. `grep -cri 'chicken burrito'|grep -cri 'black beans'`
 *a. 1345*
 `grep -cri 'chicken burrito'|grep -cri 'pinto beans'`
 *a. 582*
+
 *Chicken burritos more often have black beans.*
+
 ### 6. `find -name *.tsv| wc -l`
 *a. 2*
 ### 7. `find -name *.csv| wc -l`
