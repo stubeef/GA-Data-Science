@@ -1,7 +1,6 @@
 # Chipotle Command Line
 
-
-	### 1. `Head chipotle`
+### 1. `Head chipotle`
 	   `Tail chipotle`
 	The columns refer to the different components of the order. The level of granulairty is not at the order_id level, but gives a new row for each differnt combination of items. The columns are fairly self-explanatory and refer 
 	to what is inside the burrito, different beverages, and it groups standard items together. 
