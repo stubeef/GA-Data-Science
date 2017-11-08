@@ -49,7 +49,7 @@ dftaxi['pickup_timestring_day'] = dftaxi['pickup_timestring'].apply(lambda x: x.
 #%%
 dftaxi.head()
 #%% Subset to relevant columns.
-dftaxi = dftaxi[['pickup_timestring','pickup_timestring_month','pickup_timestring_day','Passenger_count','Trip_distance','Total_amount','response_variable']] # Add response variable
+dftaxi = dftaxi[['pickup_timestring','Passenger_count','Trip_distance','Total_amount','response_variable']] # Add response variable
 print(dftaxi.head())
 print(dftaxi.dtypes)
 #%% Convert to numeric
@@ -78,11 +78,6 @@ dftaxi_day.to_csv('dftaxi_by_day.csv',sep=',',index=False,header=True)
 #dftaxi_day = pd.read_csv(url,skipinitialspace=True)
 #%% 
 
-dftaxi_day['pickup_timestring']= pd.to_datetime(dftaxi_day['pickup_timestring'])
-print(dftaxi_day.dtypes)
-dftaxi_day.set_index('pickup_timestring',inplace=True)
-dftaxi_day.head()
-
 #%% Trends in daily data. Defaults to index for x
 dftaxi_day.plot(y='response_variable',kind='line')
 #%% Autocorrelation
@@ -104,7 +99,7 @@ plot_acf(dftaxi_day.response_variable, lags=52)
 from statsmodels.tsa.arima_model import ARMA
 from statsmodels.tsa.arima_model import ARIMA
 dftaxi_day = dftaxi_day[['response_variable']].astype(float)
-model = ARIMA(dftaxi_day, (21, 0)).fit()
+model = ARMA(dftaxi_day, (1, 0)).fit()
 model.summary()
 #Matches autocorr(1), therefore stationary dataset!
 #%%  Residuals for AR(1)
@@ -117,4 +112,11 @@ arima_model.summary()
 print(arima_model.resid.plot())
 print(plot_acf(arima_model.resid, lags = 50))
 #%% Predict
-arima_model.predict(1,100).plot()
+#arima_model.predict(1,100).plot()
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax = dftaxi_day.plot(ax=ax)
+
+fig = arima_model.plot_predict(1, 200, ax=ax, plot_insample=False)
