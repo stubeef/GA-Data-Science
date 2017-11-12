@@ -73,14 +73,18 @@ dftaxi_day.set_index('pickup_timestring',inplace=True)
 
 ##%% Export clean file to CSV
 dftaxi_day.to_csv('dftaxi_by_day.csv',sep=',',index=False,header=True)
+train.to_csv('train.csv',sep=',',index=False,header=True)
+test.to_csv('test.csv',sep=',',index=False,header=True)
 ##%% Start here to import clean and aggregated data
 #url = 'dftaxi_by_day.csv'
+#url1= 'train.csv'
+#url2 = 'test.csv
 #dftaxi_day = pd.read_csv(url,skipinitialspace=True)
-#%% 
+##########################################################################################################
 
 #%% Trends in daily data. Defaults to index for x
 dftaxi_day.plot(y='response_variable',kind='line')
-#%% Autocorrelation
+#%% Autocorrelation on entire dataset
 print (dftaxi_day.response_variable.autocorr(lag=1)) # 0.65
 print (dftaxi_day.response_variable.autocorr(lag=7)) # 0.79
 print (dftaxi_day.response_variable.autocorr(lag=21)) # 0.78
@@ -95,18 +99,18 @@ from statsmodels.graphics.tsaplots import plot_acf
 #from pandas.core import datetools
 plot_acf(dftaxi_day.response_variable, lags=52)
 
-#%% Stationariaty
+#%% Stationariaty on entire dataset
 from statsmodels.tsa.arima_model import ARMA
 from statsmodels.tsa.arima_model import ARIMA
 dftaxi_day = dftaxi_day[['response_variable']].astype(float)
 model = ARMA(dftaxi_day, (1, 0)).fit()
 model.summary()
 #Matches autocorr(1), therefore stationary dataset!
-#%%  Residuals for AR(1)
+#%%  Residuals for AR(1) using entire dataset
 type(model.resid)
 print(model.resid.plot())
 print(plot_acf(model.resid, lags = 50))
-#%% ARMA
+#%% ARIMA
 arima_model = ARIMA(dftaxi_day, (28,1, 1)).fit()
 arima_model.summary()
 print(arima_model.resid.plot())
@@ -117,6 +121,46 @@ print(plot_acf(arima_model.resid, lags = 50))
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots()
-ax = dftaxi_day.plot(ax=ax)
+ax = train.plot(ax=ax)
 
 fig = arima_model.plot_predict(1, 200, ax=ax, plot_insample=False)
+###############################################################################################################
+###############################################################################################################
+#%% Train/Test Split
+n = len(dftaxi_day.response_variable)
+
+train = dftaxi_day.response_variable[:int(.75*n)]
+test = dftaxi_day.response_variable[int(.75*n):]
+#%%
+print(test)
+#%% Train autocorrelation
+print (train.autocorr(lag=1)) # 0.61
+print (train.autocorr(lag=7)) # 0.78
+print (train.autocorr(lag=21)) # 0.76
+print (train.autocorr(lag=28)) # 0.78
+print (train.autocorr(lag=52)) # -0.27
+#%% Train stationarity
+model = ARMA(train, (1, 0)).fit()
+print(model.summary())
+#Matches autocorr(1), therefore stationary dataset!
+#%  Train Residuals for AR(1)
+type(model.resid)
+print(model.resid.plot())
+print(plot_acf(model.resid, lags = 50))
+#%%
+import statsmodels.api as sm
+from sklearn.metrics import mean_absolute_error
+
+arima_model = ARIMA(train, (21,1,1)).fit()
+arima_model.summary()
+print(arima_model.resid.plot())
+print(plot_acf(arima_model.resid, lags = 50))
+
+predictions = arima_model.predict(
+    '2016-10-01',
+    '2016-12-31',
+    dynamic=True, 
+)
+
+print("Mean absolute error: ", mean_absolute_error(test, predictions))
+model.summary()
