@@ -67,7 +67,7 @@ print(dftaxi_day.head())
 print(dftaxi_day.dtypes)
 print('Number of rows in daily aggregated view', len(dftaxi_day))
 #%% Convert to date_time and set index
-dftaxi_day['pickup_timestring']= pd.to_datetime(dftaxi_day['pickup_timestring'])
+dftaxi_day['pickup_timestring']= pd.to_datetime(dftaxi_day['pickup_timestring'])#Need additional [] in jupyter
 dftaxi_day.set_index('pickup_timestring',inplace=True)
 #%%
 
