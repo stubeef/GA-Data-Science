@@ -123,9 +123,13 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 ax = train.plot(ax=ax)
 
-fig = arima_model.plot_predict(1, 200, ax=ax, plot_insample=False)
+fig = arima_model.plot_predict('2016-10-01',
+    '2016-12-31', ax=ax, plot_insample=False)
 ###############################################################################################################
 ###############################################################################################################
+#%%
+print (train)
+#train.plot(y='response_variable',kind='line')
 #%% Train/Test Split
 n = len(dftaxi_day.response_variable)
 
@@ -164,3 +168,12 @@ predictions = arima_model.predict(
 
 print("Mean absolute error: ", mean_absolute_error(test, predictions))
 model.summary()
+#%%
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax = train.plot(ax=ax)
+
+fig = arima_model.plot_predict('2016-10-01',
+    '2016-12-31', ax=ax, plot_insample=False)
